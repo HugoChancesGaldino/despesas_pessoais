@@ -1,3 +1,4 @@
+import 'package:despesas_pessoais/components/chart.dart';
 import 'package:despesas_pessoais/components/transaction_form.dart';
 import './components/transaction_list.dart';
 import 'models/transaction.dart';
@@ -41,26 +42,64 @@ class PaginaInicial extends StatefulWidget {
 
 class _PaginaInicialState extends State<PaginaInicial> {
   final List<Transaction> _transaction = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'Novo  Tênis de Corrida',
-    //   value: 310.76,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'Conta de luz',
-    //   value: 211.30,
-    //   date: DateTime.now(),
-    // ),
+    Transaction(
+      id: 't0',
+      title: 'Transporte',
+      value: 10000.30,
+      date: DateTime.now().subtract(Duration(days: 1)),
+    ),
+    Transaction(
+      id: 't1',
+      title: 'Novo  Tênis de Corrida',
+      value: 8000.30,
+      date: DateTime.now().subtract(Duration(days: 2)),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Conta de Alimentação',
+      value: 9000.34,
+      date: DateTime.now().subtract(Duration(days: 3)),
+    ),
+    Transaction(
+      id: 't3',
+      title: 'Conta de internet',
+      value: 7000.30,
+      date: DateTime.now().subtract(Duration(days: 4)),
+    ),
+    Transaction(
+      id: 't4',
+      title: 'Conta de luz',
+      value: 5000.30,
+      date: DateTime.now().subtract(Duration(days: 5)),
+    ),
+    Transaction(
+      id: 't5',
+      title: 'Conta de água',
+      value: 6000.30,
+      date: DateTime.now().subtract(Duration(days: 6)),
+    ),
+    Transaction(
+      id: 't6',
+      title: 'Aluguel/moradia',
+      value: 30000.30,
+      date: DateTime.now().subtract(Duration(days: 0)),
+    ),
   ];
 
-  _addTransaction(String title, double value) {
+  List<Transaction> get _recentTransactions {
+    return _transaction.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(
+        Duration(days: 7),
+      ));
+    }).toList();
+  }
+
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: title,
       value: value,
-      date: DateTime.now(),
+      date: date,
     );
 
     setState(() {
@@ -68,6 +107,14 @@ class _PaginaInicialState extends State<PaginaInicial> {
     });
 
     Navigator.of(context).pop();
+  }
+
+  _deleteTransaction(String id) {
+    setState(() {
+      _transaction.removeWhere(
+        (tr) => tr.id == id,
+      );
+    });
   }
 
   _openTransactionFormModal(BuildContext context) {
@@ -98,15 +145,13 @@ class _PaginaInicialState extends State<PaginaInicial> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              width: double.infinity,
-              child: Card(
-                color: Colors.blue,
-                child: Text("Grafico"),
-                elevation: 5,
-              ),
+            Chart(
+              _recentTransactions,
             ),
-            TransactionList(_transaction),
+            TransactionList(
+              _transaction,
+              _deleteTransaction,
+            ),
           ],
         ),
       ),
